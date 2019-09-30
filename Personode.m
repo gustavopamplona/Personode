@@ -1375,6 +1375,9 @@ P.ICAfile=ICAfile;
 set(handles.edICAComp, 'string', strICAfile(1,1:end-2));
 set(handles.sliceSelect, 'string', num2str(45));
 set(handles.compSelect, 'string', num2str(1));
+set(handles.btnYesCoreg, 'Enable', 'on');
+set(handles.btnNoCoreg, 'Enable', 'on');
+
 
 guidata(handles.hF, P);
 enable_start(src)
