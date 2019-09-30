@@ -1321,10 +1321,12 @@ function ICACompChoose_text(src, evt)
 
 handles = guihandles(src);
 S = get(handles.edICAComp, 'String');
+P = guidata(src);
 
 if isempty(S)
     set(handles.btnYesCoreg, 'Enable', 'off');
     set(handles.btnNoCoreg, 'Enable', 'off');
+    P.ICAfile = [];
 else
     set(handles.btnYesCoreg, 'Enable', 'on');
     set(handles.btnNoCoreg, 'Enable', 'on');
