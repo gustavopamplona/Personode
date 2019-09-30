@@ -1334,7 +1334,6 @@ end
 
 return
 
-
 function ICACompChoose_press(src, evt)
 
 handles = guihandles(src);
@@ -1396,7 +1395,6 @@ set(handles.sliceSelect, 'string', num2str(45));
 set(handles.compSelect, 'string', num2str(1));
 set(handles.btnYesCoreg, 'Enable', 'on');
 set(handles.btnNoCoreg, 'Enable', 'on');
-
 
 guidata(handles.hF, P);
 enable_start(src)
