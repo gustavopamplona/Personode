@@ -9,6 +9,11 @@ function Personode
 
 clear all;close all; clc;
 
+if ~isdir('spm12') %this checks if spm12 is a folder in the current path.
+    error('SPM12 is required to run Pesonode. Please obtain SPM12 at: https://www.fil.ion.ucl.ac.uk/spm/software/spm12/');
+end
+
+
 %% Frames
 % Main frame
 P = struct(...
