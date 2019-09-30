@@ -1326,7 +1326,7 @@ P = guidata(src);
 if isempty(S)
     set(handles.btnYesCoreg, 'Enable', 'off');
     set(handles.btnNoCoreg, 'Enable', 'off');
-    P.ICAfile = [];
+    loadImages(src)
 else
     set(handles.btnYesCoreg, 'Enable', 'on');
     set(handles.btnNoCoreg, 'Enable', 'on');
