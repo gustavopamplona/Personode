@@ -264,6 +264,7 @@ uicontrol('style', 'edit', ...
     'tag', 'edICAComp',...
     'Enable', 'off',...
     'Selected','on',...
+    'callback', {@ICACompChoose_text},...
     'string', '...');
 uicontrol('style', 'pushbutton', ...
     'Parent',handles_gui.hF,...
@@ -1315,6 +1316,22 @@ guidata(handles.hF, P);
 loadImages(src,P.ICAgroup)
 
 return
+
+function ICACompChoose_text(src, evt)
+
+handles = guihandles(src);
+S = get(handles.edICAComp, 'String');
+
+if isempty(S)
+    set(handles.btnYesCoreg, 'Enable', 'off');
+    set(handles.btnNoCoreg, 'Enable', 'off');
+else
+    set(handles.btnYesCoreg, 'Enable', 'on');
+    set(handles.btnNoCoreg, 'Enable', 'on');
+end
+
+return
+
 
 function ICACompChoose_press(src, evt)
 
