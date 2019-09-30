@@ -1669,7 +1669,7 @@ for subj=1:(P.NrSubj+1)
                 if P.NrSubj<=1
                     M=corrcoef(temp(:,:,:,i),classImage(:,:,:,j,1),'rows','complete');
                 else
-                    M=corrcoef(temp(:,:,:,i),P.image(:,:,:,j,subj),'rows','complete'); % arrumar: inserir tamb�m classifica��o por sujeitos
+                    M=corrcoef(temp(:,:,:,i),P.image(:,:,:,j,subj),'rows','complete');
                 end
                 N(i,j)=M(1,2);
             end
