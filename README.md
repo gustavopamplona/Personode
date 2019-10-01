@@ -10,7 +10,7 @@ Personode is a toobox written in MATLAB designed to make the identification of f
 
 ## A Quick Tutorial
 
- - Download the compressed file and extract in a folder of your preference or clone this repository to your desktop.
+ - Download the compressed file (get at https://www.nitrc.org/projects/personode) and extract it in a folder of your preference or clone this repository to your desktop.
  - Set Personode's path to Matlab. Make sure that both SPM12 and Marsbar paths are also included (do not include "spm2", "spm5", and "spm99" contained in Marsbar folder).
  - Type Personode in Matlab's command window.
  - In "Source Files Main Options":
