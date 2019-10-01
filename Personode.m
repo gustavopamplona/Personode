@@ -1,7 +1,7 @@
 %___________PERSONODE____________%
-% Written by Gustavo Pamplona, MSc
-% Version 1.0, February 2017
-% Requirements: MATLAB 2013a, Marsbar (http://marsbar.sourceforge.net/)
+% Written by Gustavo Pamplona, Bruno Hebling Vieira
+% Version 0.2, October 2019
+% Requirements: MATLAB 2013a, SPM12 (https://www.fil.ion.ucl.ac.uk/spm/software/spm12/)
 %
 % Contact: gsppamplona@gmail.com
 
