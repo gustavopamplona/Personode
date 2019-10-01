@@ -9,8 +9,12 @@ function Personode
 
 clear all;close all; clc;
 
-if ~isdir('spm12') %this checks if spm12 is a folder in the current path.
+if exist('spm12') ~= 7 %this checks if spm12 is reachable
     error('SPM12 is required to run Personode. Please obtain SPM12 at: https://www.fil.ion.ucl.ac.uk/spm/software/spm12/');
+end
+
+if exist('marsbar') ~= 2 %this checks if MarsBaR is reachable
+    error('MarsBaR is required to run Personode. You can install `marsbar-0.44` that is included within the Personode root dir. Alternatively, obtain MarsBaR at: http://marsbar.sourceforge.net/');
 end
 
 %% Frames
