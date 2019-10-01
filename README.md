@@ -27,3 +27,8 @@ Personode is a toobox written in MATLAB designed to make the identification of f
 - Press Start.
 - A Manual selection window will appear showing, in the left side, the resting-state network template you want to identify and the three most probable components to be classified. You can navigate using xyz buttons. Probability values are also shown to help with the classification. One can select a component and then press Next. If more than one RSN was selected to be identified, one can also skip the current component to be defined later.
 - Nifti masks and TXT info files will be saved in the specified output folder.
+
+# References
+
+ - \[MarsBaR\] Matthew Brett, Jean-Luc Anton, Romain Valabregue, Jean-Baptiste Poline. _Region of interest analysis using an SPM toolbox_ \[abstract\] Presented at the 8th International Conference on Functional Mapping of the Human Brain, June 2-6, 2002, Sendai, Japan. Available on CD-ROM in NeuroImage, Vol 16, No 2.
+ - \[SPM12\] Penny, W. D., Friston, K. J., Ashburner, J. T., Kiebel, S. J., & Nichols, T. E. (Eds.). (2007). Statistical parametric mapping: the analysis of functional brain images.
