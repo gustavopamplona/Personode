@@ -18,7 +18,7 @@ Personode is a toobox written in MATLAB designed to make the identification of f
 	- In "Input files mode", if "Automatic" is selected, only ICA file from first subject will be required. If "Manual" is selected, one needs to manually select subjects' files for analysis;
 	- There are two modes of ROIs definition: spherical ROIs (radius can be altered) and probabilistic irregular ROIs. Select one of them;
 	- Specify the output folder.
-- In "Defining Paths", ICA files must be loaded. GIFT toolbox (download here) for Matlab can be used to create the components.
+- In "Defining Paths", ICA files must be loaded. GIFT toolbox (download at http://mialab.mrn.org/software/gift/) for Matlab can be used to create the components.
 - In "Templates Definition", choose the resting-state network(s) you would like to identify.
 - In "Are ICA maps coregistered", answer yes if images have already MNI dimensions. Answer no if you want the toolbox to perform coregistration for you (in this case, you need also to specify an MNI-normalized anatomical file in a forthcoming SPM window).
 	- If images are already with the right dimensions, one can navigate across components using the GUI buttons (slice, threshold, subject, component, refresh image)
