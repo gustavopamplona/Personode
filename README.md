@@ -6,7 +6,7 @@ Personode is a toobox written in MATLAB designed to make the identification of f
 
  - MATLAB R2013A or newer
  - SPM12 (get at https://www.fil.ion.ucl.ac.uk/spm/software/spm12/)
- - MarsBaR (get at http://marsbar.sourceforge.net/)
+ - MarsBaR (`marsbar-0.44` is included. Alternatively, get at http://marsbar.sourceforge.net/)
 
 ## A Quick Tutorial
 
