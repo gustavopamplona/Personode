@@ -14,7 +14,7 @@ if exist('spm12') ~= 7 %this checks if spm12 is reachable
 end
 
 if exist('marsbar') ~= 2 %this checks if MarsBaR is reachable
-    error('MarsBaR is required to run Personode. You can install `marsbar-0.44` that is included within the Personode root dir. Alternatively, obtain MarsBaR at: http://marsbar.sourceforge.net/');
+    error('MarsBaR is required to run Personode. You can install `marsbar-0.44` that is included within the Personode root dir. Alternatively, obtain MarsBaR at: http://marsbar.sourceforge.net/. If MarsBaR is in your `spm12/toolbox`, please add it to your PATH.');
 end
 
 %% Frames
