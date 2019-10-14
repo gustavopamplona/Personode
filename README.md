@@ -12,7 +12,10 @@ Personode is a toolbox written in MATLAB designed to make the identification of 
 
  - Download the compressed file (get at https://www.nitrc.org/projects/personode) and extract it in a folder of your preference or clone this repository to your desktop.
  - Set Personode's path to Matlab. Make sure that both SPM12 and MarsBaR paths are also included (do not include "spm2", "spm5", and "spm99" contained in MarsBaR folder).
- - Type Personode in Matlab's command window.
+ - Type Personode in Matlab's command window. The following GUI will show up:
+
+![Personode GUI in Windows](Personode_Picture_1.png)
+
  - In "Source Files Main Options":
 	- Specify the number of subjects;
 	- In "Input files mode", if "Automatic" is selected, only ICA file from first subject will be required. If "Manual" is selected, one needs to manually select subjects' files for analysis;
