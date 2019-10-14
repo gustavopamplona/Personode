@@ -1,6 +1,6 @@
 # Personode
 
-Personode is a toobox written in MATLAB designed to make the identification of fMRI spatial independent component analysis (ICA) components into resting-state networks (RSNs) easier.
+Personode is a toolbox written in MATLAB designed to make the identification of fMRI spatial independent component analysis (ICA) components into resting-state networks (RSNs) easier.
 
 ## Requirements
 
