@@ -1496,6 +1496,8 @@ function start_press(src, evt)
 handles = guihandles(src);
 P = guidata(src);
 
+set(handles.hF, 'Visible', 'off');
+
 if P.CoregYes==0
     disp('Running Coregister. Please wait...')
     matlabbatch{1,1}.spm.spatial.coreg.estwrite.ref={[P.workPath filesep 'Images_example' filesep 'avg152T1.nii,1']};
@@ -2098,7 +2100,7 @@ for subj=1:(P.NrSubj+1)
     end
     
     fclose(fid);
-
+    set(handles.hF, 'Visible', 'on');
 end
 
 return
