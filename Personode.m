@@ -21,7 +21,7 @@ end
 % Main frame
 P = struct(...
     'Source2',          0,...
-    'Source4',          0,...
+    'Source4',          1,...
     'Source5',          0,...
     'BtnAll',           0,...
     'BtnICAfile',       0,...
@@ -48,7 +48,8 @@ P = struct(...
     'loadImagesDone',   0,...
     'CoregYes',         0,...
     'radius',           4,...
-    'output',           0 ...
+    'output',           0,...
+    'sphere',           1 ...
     );
 
 [P.workPath, ~, ~]= fileparts(mfilename('fullpath'));
@@ -118,7 +119,7 @@ uicontrol('Style','Radio',...
     'FontWeight', 'bold',...
     'BackgroundColor', [0.85 0.85 0.85],...
     'String','Automatic (specify only first file in a series)',...
-    'Value', 0,...
+    'Value', 1,...
     'pos',[leftF1+25 bottomF1+heightF1-90 widthF1-26 20],...
     'callback', {@btnSource4_press},...
     'Enable', 'on',...
@@ -147,7 +148,7 @@ uicontrol('Style','Radio',...
     'FontWeight', 'bold',...
     'BackgroundColor', [0.85 0.85 0.85],...
     'String','Spheres',...
-    'Value', 0,...
+    'Value', 1,...
     'pos',[leftF1+25 bottomF1+heightF1-145 80 20],...
     'callback', {@btnSource6_press},...
     'Enable', 'on',...
@@ -166,7 +167,7 @@ uicontrol('style', 'edit', ...
     'callback', {@radius_press},...
     'BackgroundColor', 'white',...
     'Selected', 'on',...
-    'Enable', 'off',...
+    'Enable', 'on',...
     'String', 4,...
     'tag', 'edRadius');
 uicontrol('style', 'text', ...
@@ -1049,6 +1050,7 @@ else
     P.Source4=0;
     P.Source5=1;
     set(handles.btnSource4, 'Value', 0);
+    set(handles.btnSource5, 'Value', 1);
     set(handles.edICAComp, 'Enable', 'off');
     set(handles.edICACompBtn, 'Enable', 'off');
 end
@@ -1074,6 +1076,7 @@ else
     P.Source5=0;
     P.Source4=1;
     set(handles.btnSource5, 'Value', 0);
+    set(handles.btnSource4, 'Value', 1);
     set(handles.edICAComp, 'Enable', 'off');
     set(handles.edICACompBtn, 'Enable', 'off');
 end
@@ -1122,9 +1125,14 @@ return
 function btnYesCoreg_press(src, evt)
 handles = guihandles(src);
 P = guidata(src);
-P.CoregYes=1;
 
-set(handles.btnNoCoreg, 'Value', 0);
+if P.CoregYes == 0
+    P.CoregYes=1;
+    set(handles.btnNoCoreg, 'Value', 0);
+else
+    P.CoregYes=0;
+    set(handles.btnNoCoreg, 'Value', 1);
+end
 
 guidata(handles.hF, P);
 loadImages(src,P.ICAgroup)
@@ -1134,9 +1142,14 @@ return
 function btnNoCoreg_press(src, evt)
 handles = guihandles(src);
 P = guidata(src);
-P.CoregYes=0;
 
-set(handles.btnYesCoreg, 'Value', 0);
+if P.CoregYes == 1
+    P.CoregYes=0;
+    set(handles.btnYesCoreg, 'Value', 0);
+else
+    P.CoregYes=1;
+    set(handles.btnYesCoreg, 'Value', 1);
+end
 
 guidata(handles.hF, P);
 loadImages(src,P.ICAgroup)
@@ -1146,10 +1159,16 @@ return
 function btnSource6_press(src, evt)
 handles = guihandles(src);
 P = guidata(src);
-P.sphere=1;
 
-set(handles.btnSource7, 'Value', 0);
-set(handles.edRadius, 'Enable', 'on');
+if P.sphere == 0
+    P.sphere=1;
+    set(handles.btnSource7, 'Value', 0);
+    set(handles.edRadius, 'Enable', 'on');
+else
+    P.sphere=0;
+    set(handles.btnSource7, 'Value', 1);
+    set(handles.edRadius, 'Enable', 'off');
+end
 
 guidata(handles.hF, P);
 enable_start(src)
@@ -1158,10 +1177,16 @@ return
 function btnSource7_press(src, evt)
 handles = guihandles(src);
 P = guidata(src);
-P.sphere=0;
 
-set(handles.btnSource6, 'Value', 0);
-set(handles.edRadius, 'Enable', 'off');
+if P.sphere == 0
+    P.sphere = 1;
+    set(handles.btnSource6, 'Value', 1);
+    set(handles.edRadius, 'Enable', 'on');
+else
+    P.sphere = 0;
+    set(handles.btnSource6, 'Value', 0);
+    set(handles.edRadius, 'Enable', 'off');
+end
 
 guidata(handles.hF, P);
 enable_start(src)
