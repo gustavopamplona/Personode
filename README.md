@@ -1,3 +1,6 @@
+[![DOI](https://img.shields.io/badge/neuroinformatics-10.1007%2Fs12021--019--09449--4-informational)](https://doi.org/10.1007/s12021-019-09449-4)
+
+
 # Personode
 
 Personode is a MATLAB toolbox designed for regions-of-interest (ROI) individualization based on fMRI spatial independent component analysis (ICA) maps after a semi-automatic classification into resting-state networks (RSNs).
