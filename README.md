@@ -1,4 +1,4 @@
-[![DOI](https://img.shields.io/badge/neuroinformatics-10.1007%2Fs12021--019--09449--4-informational)](https://doi.org/10.1007/s12021-019-09449-4)
+[![DOI](https://img.shields.io/badge/neuroinformatics-10.1007%2Fs12021--019--09449--4-informational)](https://dx.doi.org/10.1007/s12021-019-09449-4)
 
 
 # Personode
