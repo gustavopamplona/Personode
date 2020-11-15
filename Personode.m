@@ -1,6 +1,6 @@
 %___________PERSONODE____________%
 % Written by Gustavo Pamplona, Bruno Hebling Vieira
-% Version 0.2, October 2019
+% Version 0.2b, October 2019
 % Requirements: MATLAB 2013a, SPM12 (https://www.fil.ion.ucl.ac.uk/spm/software/spm12/)
 %
 % Contact: gsppamplona@gmail.com
@@ -1386,15 +1386,27 @@ if P.Source4==0
 else
     [file,path] = uigetfile({ '*.nii',  'Select the ICA map (*.nii) of the first subject for the analysis'}, 'MultiSelect', 'off');
     wheressub=findstr(file,'sub');
-    firstSub=str2num(file(1,wheressub+3:wheressub+5));
+    
+    idx=[];
+    subj_number_found=0;
+    for i=(wheressub+3):length(file)
+        if ~isempty(str2num(file(i)))
+            idx=[idx i];
+            subj_number_found=1;
+        elseif subj_number_found==1 && isempty(str2num(file(i)))
+            break
+        end
+    end
+            
+    firstSub=str2num(file(idx));
     for i=1:P.NrSubj
         pathName(i)=cellstr(path);
         if length(num2str(i+firstSub-1))==1
-            P.fileName(i)=cellstr([file(1,[1:wheressub+2]) '00' num2str(i+firstSub-1) file(1,[wheressub+6:end])]);
+            P.fileName(i)=cellstr([file(1,1:idx(1)-1) '00' num2str(i+firstSub-1) file(1,idx(3)+1:end)]);
         elseif length(num2str(i+firstSub-1))==2
-            P.fileName(i)=cellstr([file(1,[1:wheressub+2]) '0' num2str(i+firstSub-1) file(1,[wheressub+6:end])]);
+            P.fileName(i)=cellstr([file(1,1:idx(1)-1) '0' num2str(i+firstSub-1) file(1,idx(3)+1:end)]);
         else
-            P.fileName(i)=cellstr([file(1,[1:wheressub+2]) num2str(i+firstSub-1) file(1,[wheressub+6:end])]);
+            P.fileName(i)=cellstr([file(1,1:idx(1)-1) num2str(i+firstSub-1) file(1,idx(3)+1:end)]);
         end
     end
 end
@@ -1892,8 +1904,22 @@ for subj=1:(P.NrSubj+1)
     
     idx=subj-1;
     if idx>0
-        wheressub=findstr(char(P.ICAfile(1,idx)),'sub');
-        actualSubj=str2num(P.ICAfile{1,idx}(wheressub(end)+3:wheressub(end)+5));
+        file=char(P.ICAfile(1,idx));
+        wheressub=findstr(file,'sub');
+        
+        idx_subID=[];
+        subj_number_found=0;
+        for i=(wheressub+3):length(file)
+            if ~isempty(str2num(file(i)))
+                idx_subID=[idx_subID i];
+                subj_number_found=1;
+            elseif subj_number_found==1 && isempty(str2num(file(i)))
+                break
+            end
+        end
+        
+        actualSubj=str2num(file(idx_subID));
+
     end
         
     if subj<=1
