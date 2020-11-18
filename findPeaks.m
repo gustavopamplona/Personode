@@ -120,6 +120,11 @@ else
             end
         end
         
+        [min_pos,min_pos_idx]=min(firstValue(firstValue>0));
+        if min_pos_idx < n_vox
+            n_vox = min_pos_idx;
+        end
+        
         if peak_value(k)>=0.1
             if sep == 1
                 im=m*(zica>=firstValue(round(n_vox)));
