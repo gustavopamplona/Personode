@@ -1380,7 +1380,11 @@ if P.Source4==0
         [file,path] = uigetfile({ '*.nii',  ['Select the ICA map (*.nii) for every subject to be included in the analysis']}, 'MultiSelect', 'on');
         for i=1:P.NrSubj
             pathName(i)=cellstr(path);
-            P.fileName(i)=cellstr(file(i));
+            if ~ischar(file)
+                P.fileName(i)=cellstr(file(i));
+            else
+                P.fileName(i)=cellstr(file);
+            end
         end
         file=char(file(1));
 else
