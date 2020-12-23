@@ -29,8 +29,9 @@ P = struct(...
     'BtnTemp',          0,...
     'BtnTXTAll',        0,...
     'BtnTXT',           0,...
-    'Separated',        1,...
+    'Separated',        0,...
     'Network',          0,...
+    'Atlas',            1,...
     'NrSubj',           0,...
     'thrValue',         1,...
     'lastComp',         1,...
@@ -821,8 +822,8 @@ uicontrol('Style','Radio',...
     'Parent',handles_gui.hF,...
     'FontWeight', 'bold',...
     'BackgroundColor', [0.85 0.85 0.85],...
-    'String','Separated',...
-    'Value', 1,...
+    'String','Separate ROIs',...
+    'Value', 0,...
     'pos',[leftF6+15 bottomF6+heightF6-60 widthF6-20 20],...
     'callback', {@btnSeparated_press},...
     'tag', 'btnSeparated');
@@ -836,6 +837,16 @@ uicontrol('Style','Radio',...
     'pos',[leftF6+15 bottomF6+heightF6-80 widthF6-20 20],...
     'callback', {@btnNetwork_press},...
     'tag', 'btnNetwork');
+
+uicontrol('Style','Radio',...
+    'Parent',handles_gui.hF,...
+    'FontWeight', 'bold',...
+    'BackgroundColor', [0.85 0.85 0.85],...
+    'String','Atlas',...
+    'Value', 1,...
+    'pos',[leftF6+15 bottomF6+heightF6-100 widthF6-20 20],...
+    'callback', {@btnAtlas_press},...
+    'tag', 'btnAtlas');
 
 guidata(handles_gui.hF, P);
 
@@ -1210,15 +1221,11 @@ P = guidata(src);
 if P.Separated==0
     P.Separated=1;
     P.Network=0;
+    P.Atlas=0;
     set(handles.btnSeparated, 'Value', 1);
     set(handles.btnNetwork, 'Value', 0);
-    P.creationMode='i';
-else
-    P.Separated=0;
-    P.Network=1;
-    set(handles.btnSeparated, 'Value', 0);
-    set(handles.btnNetwork, 'Value', 1);
-    P.creationMode='c';
+    set(handles.btnAtlas, 'Value', 0);
+    P.creationMode='null';
 end
 
 guidata(handles.hF, P);
@@ -1231,17 +1238,31 @@ handles = guihandles(src);
 P = guidata(src);
 
 if P.Network==0
-    P.Network=1;
     P.Separated=0;
-    set(handles.btnNetwork, 'Value', 1);
+    P.Network=1;
+    P.Atlas=0;
     set(handles.btnSeparated, 'Value', 0);
+    set(handles.btnNetwork, 'Value', 1);
+    set(handles.btnAtlas, 'Value', 0);
     P.creationMode='c';
-else
+end
+
+guidata(handles.hF, P);
+enable_start(src)
+
+return
+
+function btnAtlas_press(src, evt)
+handles = guihandles(src);
+P = guidata(src);
+
+if P.Atlas==0
+    P.Separated=0;
     P.Network=0;
-    P.Separated=1;
+    P.Atlas=1;
+    set(handles.btnSeparated, 'Value', 0);
     set(handles.btnNetwork, 'Value', 0);
-    set(handles.btnSeparated, 'Value', 1);
-    P.creationMode='i';
+    set(handles.btnAtlas, 'Value', 1);
 end
 
 guidata(handles.hF, P);
@@ -1537,7 +1558,7 @@ function start_press(src, evt)
 handles = guihandles(src);
 P = guidata(src);
 
-set(handles.hF, 'Visible', 'off');
+% set(handles.hF, 'Visible', 'off');
 
 if P.CoregYes==0
     disp('Running Coregister. Please wait...')
@@ -1925,7 +1946,7 @@ for subj=1:(P.NrSubj+1)
         actualSubj=str2num(file(idx_subID));
 
     end
-        
+    
     if subj<=1
         fprintf(['\n' 'Positioning nodes for group ICA' '\n'])
         exc=[];
@@ -1938,7 +1959,22 @@ for subj=1:(P.NrSubj+1)
     Vall=spm_vol(char(P.files(subj)));    
     image=spm_read_vols(Vall);
     
-    [peak_value,compVec,x,y,z,MNIx,MNIy,MNIz,atlasInfo,exc,mask]=findPeaks(tmp_names,image,class,subj,compVec,exc,P.Separated,P.workPath);
+    % creation mode
+    if P.Separated == 1
+        mode = 1;
+    elseif P.Network == 1
+        mode = 2;
+        creation='c';
+    elseif P.Atlas == 1
+        mode =3;
+        creation='i';
+    end
+    
+    [peak_value,compVec,x,y,z,MNIx,MNIy,MNIz,atlasInfo,exc,mask,n_clusters_temp]=findPeaks(tmp_names,image,class,subj,compVec,exc,mode,P.workPath);
+    
+    if subj==1
+        n_clusters=n_clusters_temp;
+    end
     
     exc_network=[];
     j=1;
@@ -1959,28 +1995,26 @@ for subj=1:(P.NrSubj+1)
         P.output=get(handles.edOutput, 'string');
     end
     
+    if subj > 1
+        if length(num2str(actualSubj))==1
+            str_actualSubj=['00' num2str(actualSubj)];
+        elseif length(num2str(actualSubj))==2
+            str_actualSubj=['0' num2str(actualSubj)];
+        else
+            str_actualSubj=num2str(actualSubj);
+        end
+    end
+    
     if subj<=1
         outputFolder=([P.output filesep 'Group' filesep ]);
     elseif subj>1
         if subj==1
             outputFolder=([P.output filesep 'Group' filesep]);
         else
-        if nnz(num2str(actualSubj))==1
-            outputFolder=([P.output filesep 'Sub00' num2str(actualSubj) filesep]);
-        elseif nnz(num2str(actualSubj))==2
-            outputFolder=([P.output filesep 'Sub0' num2str(actualSubj) filesep]);
-        else
-            outputFolder=([P.output filesep 'Sub' num2str(actualSubj) filesep]);
-        end
+            outputFolder=([P.output filesep 'Sub' str_actualSubj filesep]);
         end
     else
-        if nnz(num2str(actualSubj))==1
-            outputFolder=([P.output filesep 'Sub00' num2str(actualSubj) filesep]);
-        elseif nnz(num2str(actualSubj))==2
-            outputFolder=([P.output filesep 'Sub0' num2str(actualSubj) filesep]);
-        else
-            outputFolder=([P.output filesep 'Sub' num2str(actualSubj) filesep]);
-        end
+        outputFolder=([P.output filesep 'Sub' str_actualSubj filesep]);
     end
     
     mkdir(outputFolder)
@@ -1996,10 +2030,10 @@ for subj=1:(P.NrSubj+1)
         if subj==1
             TXTfilename=[outputFolder 'ROIs_Description_group.txt'];
         else
-            TXTfilename=[outputFolder 'ROIs_Description_subj' num2str(actualSubj) '.txt'];
+            TXTfilename=[outputFolder 'ROIs_Description_subj' str_actualSubj '.txt'];
         end
     else
-        TXTfilename=[outputFolder 'ROIs_Description_subj' num2str(actualSubj) '.txt'];
+        TXTfilename=[outputFolder 'ROIs_Description_subj' str_actualSubj '.txt'];
     end
 
     HeaderInfo=spm_vol([P.workPath filesep 'Images_example' filesep 'avg152T1.nii']);
@@ -2022,20 +2056,46 @@ for subj=1:(P.NrSubj+1)
             else
                 str_network=[num2str(network)];
             end
+
             if subj<=1
                 if P.sphere==1
-                    mars_rois2img(roisList, [outputFolder 'roisMask_group_network' str_network '.nii'],atlasInfo,P.creationMode)
+                    if P.Separated == 1
+                        for cluster = 1:n_clusters(network)
+                            if length(num2str(cluster))==1
+                                mars_rois2img(roisList(cluster,:), [outputFolder 'roisMask_group_network' str_network '_sphere0' num2str(cluster) '.nii'],atlasInfo,'c')
+                            else
+                                mars_rois2img(roisList(cluster,:), [outputFolder 'roisMask_group_network' str_network '_sphere' num2str(cluster) '.nii'],atlasInfo,'c')
+                            end
+                        end
+                    else
+                        mars_rois2img(roisList, [outputFolder 'roisMask_group_network' str_network '.nii'],atlasInfo,creation)
+                    end
                 else
-                    HeaderInfo.fname = [outputFolder 'roisMask_group_network' str_network '.nii'];
-                    HeaderInfo.private.dat.fname = HeaderInfo.fname;
-                    HeaderInfo.n=[1,1];
-                    HeaderInfo.dt=[16 0];
-                    spm_write_vol(HeaderInfo,mask(:,:,:,network));
-                end
-            elseif subj>1
-                if subj==1
-                    if P.sphere==1
-                        mars_rois2img(roisList, [outputFolder 'roisMask_group_network' str_network '.nii'],atlasInfo,P.creationMode)
+                    if P.Separated == 1
+                        net=1;
+                        cluster=0;
+                        for cluster_idx = 1:sum(n_clusters)
+                            if cluster_idx <= sum(n_clusters(1:net))
+                                cluster=cluster+1;
+                            else
+                                cluster=1;
+                                net=net+1;
+                            end
+                            if length(num2str(net))<=1
+                                str_network=['0' num2str(net)];
+                            else
+                                str_network=[num2str(net)];
+                            end
+                            if length(num2str(cluster))==1
+                                HeaderInfo.fname = [outputFolder 'roisMask_group_network' str_network '_cluster0' num2str(cluster) '.nii'];
+                            else
+                                HeaderInfo.fname = [outputFolder 'roisMask_group_network' str_network '_cluster' num2str(cluster) '.nii'];
+                            end
+                            HeaderInfo.private.dat.fname = HeaderInfo.fname;
+                            HeaderInfo.n=[1,1];
+                            HeaderInfo.dt=[16 0];
+                            spm_write_vol(HeaderInfo,mask(:,:,:,cluster_idx));
+                        end
                     else
                         HeaderInfo.fname = [outputFolder 'roisMask_group_network' str_network '.nii'];
                         HeaderInfo.private.dat.fname = HeaderInfo.fname;
@@ -2043,27 +2103,88 @@ for subj=1:(P.NrSubj+1)
                         HeaderInfo.dt=[16 0];
                         spm_write_vol(HeaderInfo,mask(:,:,:,network));
                     end
-                else
-                    if P.sphere==1
-                        mars_rois2img(roisList, [outputFolder 'roisMask_subj' num2str(actualSubj) '_network' str_network '.nii'],atlasInfo,P.creationMode)
+                end
+            elseif subj>1
+                if P.sphere==1
+                    if P.Separated == 1
+                        for cluster = 1:n_clusters(network)
+                            if length(num2str(cluster))==1
+                                mars_rois2img(roisList(cluster,:), [outputFolder 'roisMask_subj' str_actualSubj '_network' str_network '_sphere0' num2str(cluster) '.nii'],atlasInfo,'c')
+                            else
+                                mars_rois2img(roisList(cluster,:), [outputFolder 'roisMask_subj' str_actualSubj '_network' str_network '_sphere' num2str(cluster) '.nii'],atlasInfo,'c')
+                            end
+                        end
                     else
-                        HeaderInfo.fname = [outputFolder 'roisMask_subj' num2str(actualSubj) '_network' str_network '.nii'];
+                        mars_rois2img(roisList, [outputFolder 'roisMask_subj' str_actualSubj '_network' str_network '.nii'],atlasInfo,creation)
+                    end
+                else
+                    if P.Separated == 1
+                        net=1;
+                        cluster=0;
+                        for cluster_idx = 1:sum(n_clusters)
+                            if cluster_idx <= sum(n_clusters(1:net))
+                                cluster=cluster+1;
+                            else
+                                cluster=1;
+                                net=net+1;
+                            end
+                            if length(num2str(net))<=1
+                                str_network=['0' num2str(net)];
+                            else
+                                str_network=[num2str(net)];
+                            end
+                            if length(num2str(cluster))==1
+                                HeaderInfo.fname = [outputFolder 'roisMask_subj' str_actualSubj '_network' str_network '_cluster0' num2str(cluster) '.nii'];
+                            else
+                                HeaderInfo.fname = [outputFolder 'roisMask_subj' str_actualSubj '_network' str_network '_cluster' num2str(cluster) '.nii'];
+                            end
+                            HeaderInfo.private.dat.fname = HeaderInfo.fname;
+                            HeaderInfo.n=[1,1];
+                            HeaderInfo.dt=[16 0];
+                            spm_write_vol(HeaderInfo,mask(:,:,:,cluster_idx));
+                        end
+                    else
+                        HeaderInfo.fname = [outputFolder 'roisMask_subj' str_actualSubj '_network' str_network '.nii'];
                         HeaderInfo.private.dat.fname = HeaderInfo.fname;
                         HeaderInfo.n=[1,1];
                         HeaderInfo.dt=[16 0];
                         spm_write_vol(HeaderInfo,mask(:,:,:,network));
                     end
                 end
-            else
-                if P.sphere==1
-                    mars_rois2img(roisList, [outputFolder 'roisMask_subj' num2str(actualSubj) '_network' str_network '.nii'],atlasInfo,P.creationMode)
-                else
-                    HeaderInfo.fname = [outputFolder 'roisMask_subj' num2str(actualSubj) '_network' str_network '.nii'];
-                    HeaderInfo.private.dat.fname = HeaderInfo.fname;
-                    HeaderInfo.n=[1,1];
-                    HeaderInfo.dt=[16 0];
-                    spm_write_vol(HeaderInfo,mask(:,:,:,network));
-                end
+%             else
+%                 if P.sphere==1
+%                     if P.Separated == 1
+%                         for cluster = 1:n_clusters(network)
+%                             if length(num2str(cluster))==1
+%                                 mars_rois2img(roisList(cluster,:), [outputFolder 'roisMask_subj' str_actualSubj '_network' str_network '_sphere0' num2str(cluster) '.nii'],atlasInfo,'c')
+%                             else
+%                                 mars_rois2img(roisList(cluster,:), [outputFolder 'roisMask_subj' str_actualSubj '_network' str_network '_sphere' num2str(cluster) '.nii'],atlasInfo,'c')
+%                             end
+%                         end
+%                     else
+%                         mars_rois2img(roisList, [outputFolder 'roisMask_subj' str_actualSubj '_network' str_network '.nii'],atlasInfo,'c')
+%                     end
+%                 else
+%                     if P.Separated == 1
+%                         for cluster = 1:n_clusters(network)
+%                             if length(num2str(cluster))==1
+%                                 HeaderInfo.fname = [outputFolder 'roisMask_subj' str_actualSubj '_network' str_network '_cluster0' num2str(cluster) '.nii'];
+%                             else
+%                                 HeaderInfo.fname = [outputFolder 'roisMask_subj' str_actualSubj '_network' str_network '_cluster' num2str(cluster) '.nii'];
+%                             end
+%                             HeaderInfo.private.dat.fname = HeaderInfo.fname;
+%                             HeaderInfo.n=[1,1];
+%                             HeaderInfo.dt=[16 0];
+%                             spm_write_vol(HeaderInfo,mask(:,:,:,network,cluster));
+%                         end
+%                     else
+%                         HeaderInfo.fname = [outputFolder 'roisMask_subj' str_actualSubj '_network' str_network '.nii'];
+%                         HeaderInfo.private.dat.fname = HeaderInfo.fname;
+%                         HeaderInfo.n=[1,1];
+%                         HeaderInfo.dt=[16 0];
+%                         spm_write_vol(HeaderInfo,mask(:,:,:,network));
+%                     end
+%                 end
             end
             
             if size(info_cell,1)==0

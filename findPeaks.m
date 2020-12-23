@@ -1,7 +1,10 @@
-function [peak_value,vec,x,y,z,MNIx,MNIy,MNIz,atlasInfo,exc,mask]=findPeaks(tmp_names,compImage,class,subj,vec,exc,sep,workPath)
+function [peak_value,vec,x,y,z,MNIx,MNIy,MNIz,atlasInfo,exc,mask,n_clusters]=findPeaks(tmp_names,compImage,class,subj,vec,exc,mode,workPath)
 
 D = dir([workPath filesep 'Clusters']);
 atlasInfo=spm_vol([workPath filesep 'Clusters' filesep D(3).name]);
+
+n_selClusters=[];
+n_clusters_removed=[];
 
 if subj==1
     
@@ -53,21 +56,28 @@ if subj==1
                 
             end
             
-            if k~=1
-                if vec(k)~=vec(k-1)
-                    n=n+1;
-                    m=1;
+            if mode ~= 1
+                if k~=1
+                    if vec(k)~=vec(k-1)
+                        n=n+1;
+                        m=1;
+                    end
                 end
             end
             
+            if mode == 1
+                im=(zica>=firstValue(round(n_vox)));
+                mask(:,:,:,m)=im;
+                m=m+1;
+            end
             if peak_value(k)>=0.1
-                if sep == 1
+                if mode == 2
+                    im=zica>=firstValue(round(n_vox));
+                    mask(:,:,:,n)=mask(:,:,:,n)+im;
+                elseif mode == 3
                     im=m*(zica>=firstValue(round(n_vox)));
                     mask(:,:,:,n)=mask(:,:,:,n)+im;
                     m=m+1;
-                else
-                    im=zica>=firstValue(round(n_vox));
-                    mask(:,:,:,n)=mask(:,:,:,n)+im;
                 end
             end
             k=k+1;
@@ -113,10 +123,12 @@ else
             n_vox=n_vox_total/10;
         end
         
-        if k~=1
-            if vec(k)~=vec(k-1)
-                n=n+1;
-                m=1;
+        if mode ~= 1
+            if k~=1
+                if vec(k)~=vec(k-1)
+                    n=n+1;
+                    m=1;
+                end
             end
         end
         
@@ -125,19 +137,34 @@ else
             n_vox = min_pos_idx;
         end
         
+        if mode == 1
+            im=(zica>=firstValue(round(n_vox)));
+            mask(:,:,:,m)=im;
+            m=m+1;
+        end
         if peak_value(k)>=0.1
-            if sep == 1
+            if mode == 2
+                im=zica>=firstValue(round(n_vox));
+                mask(:,:,:,n)=mask(:,:,:,n)+im;
+            elseif mode == 3
                 im=m*(zica>=firstValue(round(n_vox)));
                 mask(:,:,:,n)=mask(:,:,:,n)+im;
                 m=m+1;
-            else
-                im=zica>=firstValue(round(n_vox));
-                mask(:,:,:,n)=mask(:,:,:,n)+im;
             end
         end
         k=k+1;
     end
     
+end
+
+if subj==1
+    for i=1:length(n_selClusters)
+        if i == 1
+            accum(i) = n_selClusters(i);
+        else
+            accum(i) = n_selClusters(i)+accum(i-1);
+        end
+    end
 end
 
 if subj==1
@@ -150,8 +177,20 @@ if subj==1
     MNIy(exc)=[];
     MNIz(exc)=[];
     vec(exc)=[];
+    if mode == 1
+        mask(:,:,:,exc)=[];
+    end
 end
-
-mask=flipud(mask);
+if subj==1
+    for i=1:length(accum)
+        if i == 1
+            n_clusters_removed(i)=nnz(exc<=accum(1));
+        else
+            n_clusters_removed(i)=nnz(exc<=accum(i) & exc>accum(i-1));
+        end
+    end
+end
+            
+n_clusters=n_selClusters-n_clusters_removed;
     
 return
